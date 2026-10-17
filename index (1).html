@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16352d"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg">
+<title>MotorClaimCam</title>
+<style>
+:root{--green:#16352d;--green2:#245447;--bg:#f3f5f3;--card:#fff;--ink:#17211d;--muted:#66736d;--line:#dce4df;--ok:#137547;--warn:#a65b00;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:var(--green);color:#fff;padding:20px 16px 18px;position:sticky;top:0;z-index:3;box-shadow:0 2px 10px #0002}
+header .brand{font-size:12px;letter-spacing:.12em;opacity:.8;font-weight:700}header h1{font-size:21px;margin:5px 0 3px}header p{margin:0;font-size:13px;opacity:.85}
+main{max-width:760px;margin:0 auto;padding:14px 12px 100px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 5px #10251c08}
+h2{font-size:16px;margin:0 0 12px}h3{font-size:14px;margin:0 0 6px}label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:9px 0 5px}
+input,textarea,select{width:100%;font:inherit;font-size:14px;padding:11px 12px;border:1px solid #cbd6cf;border-radius:10px;background:#fff;color:var(--ink)}
+textarea{min-height:76px;resize:vertical}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:11px;padding:12px 14px;font:inherit;font-size:14px;font-weight:750;cursor:pointer;background:var(--green);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn.secondary{background:#e7eee9;color:var(--green)}.btn.outline{background:#fff;color:var(--green);border:1px solid #b8c8bf}.btn.danger{background:#fff0ef;color:var(--red)}.btn.small{padding:8px 10px;font-size:12px}.btn:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#edf3ef;border-radius:12px;padding:10px}.stat strong{font-size:21px;display:block}.stat span{font-size:11px;color:var(--muted)}
+.progress{height:7px;background:#e5ebe7;border-radius:10px;overflow:hidden;margin-top:8px}.progress div{height:100%;background:#21865a;width:0;transition:width .2s}.item{border:1px solid var(--line);border-radius:12px;padding:11px;margin-top:8px;display:flex;gap:10px;align-items:flex-start}.item.active{border-color:#4a806a;background:#f4faf6}.itemmain{flex:1;min-width:0}.itemname{font-weight:750;font-size:14px;overflow-wrap:anywhere}.sub{font-size:12px;color:var(--muted);margin-top:3px}.pill{font-size:11px;font-weight:750;border-radius:999px;padding:4px 8px;background:#edf0ee;color:#536159;white-space:nowrap}.pill.done{background:#e1f4e8;color:#11633a}.pill.pending{background:#fff1d8;color:#895000}.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.thumb{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}.hidden{display:none!important}.stickybar{position:fixed;bottom:0;left:0;right:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#ffffffed;backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:4}.stickybar>div{max-width:760px;margin:auto;display:flex;gap:8px}.stickybar .btn{flex:1}.hint{font-size:12px;color:var(--muted);line-height:1.45}.notice{border-radius:10px;padding:10px;background:#fff5dc;color:#7d4c00;font-size:12px;line-height:1.45}.oknotice{background:#e9f7ee;color:#155c36}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:8px}.itemtools{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.cameraLabel{position:relative;overflow:hidden}.cameraLabel input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}.tiny{font-size:11px;color:var(--muted)}.empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+@media(min-width:600px){main{padding-top:20px}.card{padding:18px}.thumb{width:76px;height:76px}}
+.modal{position:fixed;inset:0;background:#000a;z-index:10;display:flex;align-items:flex-end}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:15px}.sheet .thumb{width:90px;height:90px}
+input[type=checkbox]{width:26px;height:26px;flex:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">FIELD INSPECTION TOOL</div>
+  <h1>MotorClaimCam</h1>
+  <p>Organize motor claim photos • Auto-saved on this device</p>
+</header>
+<main>
+  <section class="card">
+    <div class="sectionhead"><h2>Current case</h2><span id="saveState" class="pill done">Auto-save on</span></div>
+    <div class="grid">
+      <div><label for="plate">Registration no.</label><input id="plate" placeholder="e.g. DXX 1234"></div>
+    </div>
+    <label for="vehicle">Vehicle model / info (optional)</label><input id="vehicle" placeholder="e.g. Honda City 1.5 RS">
+    <label for="workshop">Workshop name (optional)</label><input id="workshop" placeholder="Workshop name">
+    <div class="grid"><div><label for="resSel">Photo size</label><select id="resSel"><option value="1000000">Medium (~1MB)</option><option value="2000000" selected>HD (~2MB)</option><option value="0">Original (large, no watermark)</option></select></div><div><label for="wmSel">Watermark</label><select id="wmSel"><option value="1" selected>ON (real date &amp; time)</option><option value="m">MANUAL (set date &amp; time)</option><option value="0">OFF</option></select></div><div><label for="wmSize">Watermark size</label><select id="wmSize"><option value="0.8">Small</option><option value="1" selected>Default</option><option value="1.25">Large</option></select></div></div>
+    <div id="wmManual" class="hidden card" style="background:#fff7e6"><label for="wmDate">Watermark start date &amp; time</label><input id="wmDate" type="datetime-local"><button class="btn small" id="wmSet">Set</button><p class="hint" id="wmNow"></p><p class="hint">The clock keeps running from the time you set. Manual watermarks are shown in yellow, and the real capture time stays in index.csv.</p></div>
+    <div class="actions">
+      <button class="btn secondary" id="newCaseBtn">＋ New case</button>
+      <button class="btn outline" id="saveNowBtn">Save now</button>
+    </div>
+    <p class="hint">Data is stored in this browser on this phone. Do not clear browser data before exporting or backing up the case.</p>
+  </section>
+
+  <section class="card">
+    <div class="sectionhead"><h2>Inspection summary</h2><span id="totalPhotosLabel" class="pill">0 photos</span></div>
+    <div class="stats">
+      <div class="stat"><strong id="itemCount">0</strong><span>List items</span></div>
+      <div class="stat"><strong id="doneCount">0</strong><span>Items with photos</span></div>
+      <div class="stat"><strong id="pendingCount">0</strong><span>No photos yet</span></div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <p class="hint" id="progressText">Add the parts list to get started.</p>
+  </section>
+
+  <section class="card">
+    <h2>1. Workshop estimate</h2>
+    <p class="hint">Take photos of the printed parts and labour lists for reference, or scan the estimate with OCR below.</p>
+    <div class="grid">
+      <label class="btn secondary cameraLabel">📄 Photo of parts list<input id="partsPaper" type="file" accept="image/*" capture="environment"></label>
+      <label class="btn secondary cameraLabel">🧾 Photo of labour list<input id="laborPaper" type="file" accept="image/*" capture="environment"></label>
+    </div>
+    <div id="paperStatus" class="sub">No estimate photos saved yet.</div>
+    <div class="card" style="background:#f1f7f3"><strong>Scan workshop estimate (OCR)</strong><p class="hint">Pick screenshots or photos of the estimate in order. Parts and labour are read together; review before adding to the checklist.</p><label for="ocrSel">Scan speed</label><select id="ocrSel"><option value="1100">Fast (less accurate)</option><option value="1400" selected>Balanced</option><option value="1800">Accurate (slower)</option></select><button class="btn" id="scanBtn">📷 Pick estimate images</button><input id="scanFile" class="hidden" type="file" accept="image/*" multiple><p class="hint" id="scanStatus"></p><div id="scanOut"></div></div>
+    <label for="partsText">Parts list (one item per line)</label>
+    <textarea id="partsText" placeholder="Front bumper&#10;Headlamp LH&#10;Fender RH&#10;Bonnet"></textarea>
+    <div class="actions"><button class="btn" id="addPartsBtn">Add items to checklist</button><button class="btn outline" id="addLaborBtn">＋ Add labour item</button></div>
+    <p class="hint">For long lists, paste many lines at once. Existing items with the same name are not duplicated.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Mandatory photos</h2>
+    <p class="hint">Mandatory photos for every case. Take all of them before detailed damage photos. <b id="mandStat"></b></p>
+    <div id="corners"></div>
+  </section>
+
+  <section class="card">
+    <div class="sectionhead"><h2>3. Parts & labour checklist</h2><span class="pill" id="listTypeLabel">All items</span></div>
+    <div class="grid">
+      <div><label for="filterType">Filter list</label><select id="filterType"><option value="all">All items</option><option value="part">Parts</option><option value="labor">Labour</option></select></div>
+      <div><label for="filterStatus">Photo status</label><select id="filterStatus"><option value="all">All statuses</option><option value="pending">No photos yet</option><option value="done">Has photos</option></select></div>
+    </div>
+            <div id="itemList"></div>
+    <div class="actions"><button class="btn secondary" id="addOneBtn">＋ Add one item</button></div>
+  </section>
+
+  <section class="card">
+    <h2>4. Review and export</h2>
+    <div id="exportSummary" class="notice">Export when photos and lists have been reviewed.</div>
+    <div class="actions">
+      <button class="btn" id="exportBtn">⬇ Export as one ZIP file</button>
+      
+      
+    </div>
+    <p class="hint">The ZIP contains the photos, workshop estimate photos if any, index.csv and a case summary. It is built on the phone; do not assume the export succeeded until the file has finished downloading.</p>
+  </section>
+  <p class="tiny">Prototype V3 • Sensitive claim data: use a PIN-protected device and export/delete data according to workplace policy.</p>
+</main>
+<div class="stickybar"><div><button class="btn secondary" id="goListBtn">Checklist</button><button class="btn" id="finishBtn">FINISH & EXPORT</button></div></div>
+<div id="modal" class="modal hidden"><div class="sheet"><div class="sectionhead"><h2 id="mTitle"></h2><button class="btn small outline" id="mClose">Close</button></div><p class="hint">Delete a photo and retake it if needed. Photos with no angle chosen are named Photo_01 and so on.</p><div id="mBody"></div></div></div>
+<input id="photoPicker" class="hidden" type="file" accept="image/*" capture="environment">
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+const safeName=s=>(s||'Item').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,65)||'Item';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ANG=['','Overall','Medium','Closeup','Extra'];
+const MAND=['Front View Right','Front View Left','Rear View Right','Rear View Left','Windscreen Front','Tyre Depth Front Left','Tyre Depth Rear Left','Tyre Depth Front Right','Tyre Depth Rear Right','Tyre Size & Tyre Brand','Engine Compartment','Engine Number','Chassis Number','Interior View','Odometer Reading'],OLD={'Depan kanan':'Front View Right','Depan kiri':'Front View Left','Belakang kanan':'Rear View Right','Belakang kiri':'Rear View Left'};
+const mig=old=>{const used=new Set(),out=MAND.map(n=>{const o=old.find(c=>c.name===n||OLD[c.name]===n);if(o)used.add(o.id);return{id:o?o.id:uid(),name:n,photos:o?o.photos:[]}});old.filter(c=>!used.has(c.id)&&c.photos.length).forEach(c=>out.push(c));return out};
+const blank=()=>({case:{plate:'',vehicle:'',workshop:''},items:[],corners:MAND.map(n=>({id:uid(),name:n,photos:[]})),papers:{parts:null,labor:null},wmOffset:0,createdAt:new Date().toISOString()});
+let state=blank(),db,busy=false,sel=null;const urls=new Map();
+const req=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const done=tx=>new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=tx.onabort=()=>rej(tx.error)});
+const openDB=()=>new Promise((res,rej)=>{const r=indexedDB.open('mcp_v2',1);r.onupgradeneeded=()=>{r.result.createObjectStore('kv');r.result.createObjectStore('photos')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const kvPut=(k,v)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(v,k);return done(tx)};
+const phPut=(id,v)=>{const tx=db.transaction('photos','readwrite');tx.objectStore('photos').put(v,id);return done(tx)};
+const phGet=id=>req(db.transaction('photos').objectStore('photos').get(id));
+const phDel=ids=>{const tx=db.transaction('photos','readwrite');ids.forEach(i=>{tx.objectStore('photos').delete(i);const u=urls.get(i);if(u){URL.revokeObjectURL(u);urls.delete(i)}});return done(tx)};
+const phClear=()=>{const tx=db.transaction('photos','readwrite');tx.objectStore('photos').clear();urls.forEach(u=>URL.revokeObjectURL(u));urls.clear();return done(tx)};
+const setSave=(t,c)=>{$('saveState').textContent=t;$('saveState').className='pill '+c};
+async function save(){try{state.case={plate:$('plate').value,vehicle:$('vehicle').value,workshop:$('workshop').value};state.updatedAt=new Date().toISOString();await kvPut('state',state);setSave('Saved','done');renderSummary()}catch(e){setSave('Save failed','pending');alert('Could not save. Storage may be full. '+e.message)}}
+let tm;const later=()=>{setSave('Saving…','');clearTimeout(tm);tm=setTimeout(save,250)};
+const cnt=o=>o.photos.length;
+const target=()=>sel&&(sel.kind==='corner'?state.corners:state.items).find(x=>x.id===sel.id);
+async function fill(root){for(const img of root.querySelectorAll('img[data-p]')){const id=img.dataset.p;let u=urls.get(id);if(!u){const r=await phGet(id);if(!r)continue;u=URL.createObjectURL(r.thumb);urls.set(id,u)}img.src=u}}
+const thumbs=(ph,n)=>ph.length?`<div class="thumbs">${ph.slice(-n).map(p=>`<img class="thumb" data-p="${p.id}" alt="">`).join('')}</div>`:'';
+function renderSummary(){const total=all().reduce((n,i)=>n+cnt(i),0),d=state.items.filter(i=>cnt(i)>0).length,p=state.items.length-d;$('itemCount').textContent=state.items.length;$('doneCount').textContent=d;$('pendingCount').textContent=p;$('totalPhotosLabel').textContent=total+' photos';const pct=state.items.length?Math.round(d/state.items.length*100):0;$('progressBar').style.width=pct+'%';$('progressText').textContent=state.items.length?`${pct}% of items have photos • ${total} photos including mandatory photos`:'Add the parts list to get started.';$('mandStat').textContent=`(${state.corners.filter(c=>cnt(c)).length}/${state.corners.length} done)`;$('exportSummary').textContent=(state.items.length?`${d} of ${state.items.length} items have photos. ${p} items without photos. Total photos: ${total}.`:'No checklist items yet. Add a list before exporting.')+` Mandatory photos: ${state.corners.filter(c=>cnt(c)).length}/${state.corners.length}.`}
+function all(){return [...state.corners,...state.items]}
+function renderCorners(){const el=$('corners');el.innerHTML='';state.corners.forEach(c=>{const n=cnt(c),row=document.createElement('div');row.className='item';row.innerHTML=`<div class="itemmain"><div class="itemname">${esc(c.name)}</div><div class="sub">${n} photos</div>${thumbs(c.photos,4)}</div><div class="itemtools" style="flex-direction:column"><button class="btn small ${n?'secondary':''}" data-a>📷 ${n?'Add':'Take'}</button>${n?'<button class="btn small outline" data-r>Review</button>':''}</div>`;row.querySelector('[data-a]').onclick=()=>pick('corner',c.id);const r=row.querySelector('[data-r]');if(r)r.onclick=()=>review('corner',c.id);el.appendChild(row)});fill(el)}
+function renderItems(){const list=$('itemList');list.innerHTML='';let arr=[...state.items].sort((a,b)=>({part:0,labor:1,misc:2}[a.type]-{part:0,labor:1,misc:2}[b.type])||((a.no||9999)-(b.no||9999)));const ty=$('filterType').value,st=$('filterStatus').value;if(ty!=='all')arr=arr.filter(i=>i.type===ty||i.also===ty);if(st==='pending')arr=arr.filter(i=>!cnt(i));if(st==='done')arr=arr.filter(i=>cnt(i));$('listTypeLabel').textContent=arr.length+' items';if(!arr.length){list.innerHTML='<div class="empty">No items in this view. Add a list or change the filter.</div>';return}
+arr.forEach(item=>{const n=cnt(item),div=document.createElement('div');div.className='item'+(sel&&sel.id===item.id?' active':'');div.innerHTML=`<div class="itemmain"><div class="sectionhead"><div class="itemname">${numOf(item)?esc(numOf(item))+'. ':''}${esc(item.name)}</div><span class="pill ${n?'done':'pending'}">${n?'Has photos':'None'}</span></div><div class="sub">${TL(item)} • ${n} photos${item.qty>1?' • Qty '+item.qty:''}${item.tag?' • '+esc(item.tag):''}${item.note?'<br>'+esc(item.note):''}</div>${thumbs(item.photos,4)}<div class="itemtools"><button class="btn small" data-a>📷 ${n?'Add photos':'Take photo'}</button>${n?'<button class="btn small secondary" data-r>Review</button>':''}<button class="btn small secondary" data-n>Rename</button><button class="btn small outline" data-x>Delete item</button></div></div>`;
+div.querySelector('[data-a]').onclick=()=>pick('item',item.id);const r=div.querySelector('[data-r]');if(r)r.onclick=()=>review('item',item.id);
+div.querySelector('[data-n]').onclick=()=>{const nm=prompt('Item name:',item.name);if(nm&&nm.trim()){item.name=nm.trim();later();renderItems()}};
+div.querySelector('[data-x]').onclick=async()=>{if(confirm('Delete this item? Its photos will also be deleted.')){await phDel(item.photos.map(p=>p.id));state.items=state.items.filter(i=>i.id!==item.id);await save();renderAll()}};list.appendChild(div)});fill(list)}
+function renderPapers(){$('paperStatus').textContent='Parts list: '+(state.papers.parts?'saved':'not yet')+' • Labour list: '+(state.papers.labor?'saved':'not yet')}
+function renderAll(){renderSummary();renderCorners();renderItems();renderPapers()}
+function addNames(text,type){const names=text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);let a=0;for(const name of names)if(!state.items.some(i=>i.type===type&&i.name.toLowerCase()===name.toLowerCase())){state.items.push({id:uid(),name,type,photos:[]});a++}$('partsText').value='';later();renderAll();alert(a?`${a} items added.`:'No new items added. The same names may already exist.')}
+async function shrink(file,max,q,tmax){const b=await createImageBitmap(file,{imageOrientation:'from-image'});const tb=m=>{const s=Math.max(b.width,b.height)>m?m/Math.max(b.width,b.height):1,c=document.createElement('canvas');c.width=Math.round(b.width*s);c.height=Math.round(b.height*s);c.getContext('2d').drawImage(b,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',q))};const full=max?await tb(max):file,thumb=await tb(tmax);b.close();return{full,thumb}}
+function mark(x,W,H,d,tag){const sh=Math.min(W,H),k=+$('wmSize').value||1,t=fmtD(d);x.font='600 100px sans-serif';const f=Math.round(100*(.2969*sh)/x.measureText('17 October 2026 17:17').width*k);x.font=`600 ${f}px sans-serif`;x.textBaseline='alphabetic';const bb=x.measureText(t),ox=.0651*sh+bb.actualBoundingBoxLeft,oy=H-.0703*sh;x.shadowColor='rgba(0,0,0,.6)';x.shadowBlur=f*.1;x.shadowOffsetY=f*.03;x.fillStyle=tag?'#ffd400':'#fff';x.fillText(t,ox,oy);x.shadowColor='transparent';x.shadowBlur=0}
+async function shot(file){const lim=+$('resSel').value,md=$('wmSel').value,man=md==='m',real=new Date(file.lastModified||Date.now()),d=man?new Date(real.getTime()+(state.wmOffset||0)):real,wm=md!=='0'&&lim>0,b=await createImageBitmap(file,{imageOrientation:'from-image'}),M=Math.max(b.width,b.height);const mk=(s,q,w)=>{const c=document.createElement('canvas');c.width=Math.round(b.width*s);c.height=Math.round(b.height*s);const x=c.getContext('2d');x.drawImage(b,0,0,c.width,c.height);if(w)mark(x,c.width,c.height,d,man);return new Promise(r=>c.toBlob(r,'image/jpeg',q))};const thumb=await mk(Math.min(1,200/M),.7,false);if(!lim){b.close();return{full:file,thumb,wm:'off',wmAt:''}}let s=Math.min(1,(lim<=1.2e6?2200:3000)/M),full;for(let i=0;i<6;i++){for(const q of[.9,.82,.74,.66]){full=await mk(s,q,wm);if(full.size<=lim)break}if(full.size<=lim)break;s*=.85}b.close();return{full,thumb,wm:!wm?'off':man?'manual':'auto',wmAt:man&&wm?d.toISOString():''}}
+async function addPhoto(tg,file,kind){const e=await (navigator.storage&&navigator.storage.estimate?navigator.storage.estimate():null);if(e&&e.quota-e.usage<60e6)throw new Error('Storage almost full. Export the case first.');const {full,thumb,wm,wmAt}=await shot(file),id=uid();await phPut(id,{blob:full,thumb,mime:full.type||'image/jpeg'});tg.photos.push({id,angle:kind==='corner'?'':'',takenAt:new Date().toISOString(),orig:file.name||'',wm,wmAt})}
+function pick(kind,id){if($('wmSel').value==='m'&&!state.wmOffset){alert('Set the manual watermark date and time first, or switch Watermark to ON.');return}sel={kind,id};$('photoPicker').value='';$('photoPicker').click()}
+$('photoPicker').addEventListener('change',async e=>{const files=[...e.target.files],tg=target();if(!files.length||!tg)return;setSave('Saving…','');for(const f of files){try{await addPhoto(tg,f,sel.kind);await save()}catch(err){alert('Photo not saved: '+err.message)}}renderAll()});
+function review(kind,id){sel={kind,id};$('modal').classList.remove('hidden');drawReview()}
+function drawReview(){const tg=target();if(!tg){$('modal').classList.add('hidden');return}$('mTitle').textContent=tg.name;const b=$('mBody');b.innerHTML=tg.photos.map((p,i)=>`<div class="item"><img class="thumb" data-p="${p.id}" alt=""><div class="itemmain"><div class="itemname">Photo ${i+1}</div><select data-s="${p.id}">${ANG.map(a=>`<option value="${a}" ${a===p.angle?'selected':''}>${a||'(angle not set)'}</option>`).join('')}</select><div class="itemtools"><button class="btn small danger" data-d="${p.id}">Delete</button></div></div></div>`).join('')||'<div class="empty">No photos.</div>';
+b.querySelectorAll('[data-s]').forEach(s=>s.onchange=()=>{tg.photos.find(p=>p.id===s.dataset.s).angle=s.value;later()});
+b.querySelectorAll('[data-d]').forEach(x=>x.onclick=async()=>{if(!confirm('Delete this photo?'))return;await phDel([x.dataset.d]);tg.photos=tg.photos.filter(p=>p.id!==x.dataset.d);await save();drawReview();renderAll()});fill(b)}
+$('mClose').onclick=()=>$('modal').classList.add('hidden');
+async function paper(which,file){if(!file)return;try{const old=state.papers[which],{full,thumb,wm,wmAt}=await shot(file),id=uid();await phPut(id,{blob:full,thumb,mime:full.type||'image/jpeg'});state.papers[which]={id,wm,wmAt};if(old)await phDel([old.id]);await save();renderPapers()}catch(e){alert('Estimate photo not saved: '+e.message)}}
+$('partsPaper').onchange=e=>paper('parts',e.target.files[0]);$('laborPaper').onchange=e=>paper('labor',e.target.files[0]);['partsPaper','laborPaper'].forEach(id=>$(id).addEventListener('click',e=>{if($('wmSel').value==='m'&&!state.wmOffset){e.preventDefault();alert('Set the manual watermark date and time first, or switch Watermark to ON.')}}));
+$('addPartsBtn').onclick=()=>addNames($('partsText').value,'part');
+$('addLaborBtn').onclick=()=>{const n=prompt('Labour item name (e.g. Remove & refit front bumper):');if(n&&n.trim()){if(!state.items.some(i=>i.type==='labor'&&i.name.toLowerCase()===n.trim().toLowerCase()))state.items.push({id:uid(),name:n.trim(),type:'labor',photos:[]});later();renderAll()}};
+$('addOneBtn').onclick=()=>{const n=prompt('Name of the part or labour item:');if(n&&n.trim()){const type=confirm('Press OK for PART. Press Cancel for LABOUR.')?'part':'labor';state.items.push({id:uid(),name:n.trim(),type,photos:[]});later();renderAll()}};
+['plate','vehicle','workshop'].forEach(id=>$(id).addEventListener('input',later));
+$('filterType').onchange=renderItems;$('filterStatus').onchange=renderItems;$('saveNowBtn').onclick=save;
+const setInputs=()=>['plate','vehicle','workshop'].forEach(id=>$(id).value=state.case[id]||'');
+$('newCaseBtn').onclick=async()=>{if(!confirm('Start a new case? Make sure the current case has been exported. ALL photos of the current case will be DELETED.'))return;await phClear();state=blank();setInputs();await save();renderAll()};
+$('goListBtn').onclick=()=>$('itemList').scrollIntoView({behavior:'smooth',block:'start'});
+$('finishBtn').onclick=()=>{$('exportSummary').scrollIntoView({behavior:'smooth',block:'center'});const ms=state.corners.filter(c=>!cnt(c)).map(c=>c.name);if(confirm((ms.length?'MANDATORY PHOTOS NOT COMPLETE:\n'+ms.join('\n')+'\n\n':'')+'Save and continue to ZIP export?'))exportZip()};
+$('exportBtn').onclick=exportZip;
+function downloadBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
+const T=(()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(d){let c=0xffffffff;for(let i=0;i<d.length;i++)c=T[(c^d[i])&255]^(c>>>8);return(c^0xffffffff)>>>0}
+async function exportZip(){if(busy)return;busy=true;$('exportBtn').disabled=true;try{await save();const enc=new TextEncoder(),parts=[],cen=[];let off=0,seq=1,miss=0;const cf=safeName(state.case.plate||'case'),csv=[['sequence','filename','folder','item','type','angle','taken_at','list_no','watermark','watermark_time']];
+const add=async(name,blob,when)=>{const dt=when?new Date(when):new Date(),dT=((dt.getHours()<<11)|(dt.getMinutes()<<5)|(dt.getSeconds()>>1))&0xffff,dD=(((dt.getFullYear()-1980)<<9)|((dt.getMonth()+1)<<5)|dt.getDate())&0xffff,d=new Uint8Array(await blob.arrayBuffer()),crc=crc32(d),nm=enc.encode(name),sz=d.length;const l=new Uint8Array(30+nm.length),v=new DataView(l.buffer);v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(10,dT,true);v.setUint16(12,dD,true);v.setUint32(14,crc,true);v.setUint32(18,sz,true);v.setUint32(22,sz,true);v.setUint16(26,nm.length,true);l.set(nm,30);const c=new Uint8Array(46+nm.length),w=new DataView(c.buffer);w.setUint32(0,0x02014b50,true);w.setUint16(4,20,true);w.setUint16(6,20,true);w.setUint16(12,dT,true);w.setUint16(14,dD,true);w.setUint32(16,crc,true);w.setUint32(20,sz,true);w.setUint32(24,sz,true);w.setUint16(28,nm.length,true);w.setUint32(42,off,true);c.set(nm,46);parts.push(l,blob);cen.push(c);off+=l.length+sz};
+const plan=[];state.corners.forEach(g=>g.photos.forEach((p,i)=>plan.push({f:'01_Mandatory',g,p,i,t:'corner'})));state.items.forEach(g=>g.photos.forEach((p,i)=>plan.push({f:g.type==='labor'?'03_Labor':g.type==='misc'?'04_Misc':'02_Parts',g,p,i,t:g.type})));
+for(const x of plan){const r=await phGet(x.p.id);if(!r){miss++;continue}const ext=/png/.test(r.mime)?'png':/webp/.test(r.mime)?'webp':'jpg',ang=x.t==='corner'?(x.i?'Photo_'+String(x.i+1).padStart(2,'0'):''):safeName(x.p.angle||'Photo_'+String(x.i+1).padStart(2,'0')),fn=(String(seq).padStart(3,'0')+' '+safeName(x.g.name)+(ang?' '+ang:'')).replace(/_/g,' ')+'.'+ext;await add(`${cf}/${x.f}/${fn}`,r.blob,x.p.takenAt);csv.push([seq,fn,x.f,x.g.name,x.t,x.p.angle||'',x.p.takenAt||'',numOf(x.g),x.p.wm||'',x.p.wmAt||'']);seq++}
+for(const k of['parts','labor'])if(state.papers[k]){const r=await phGet(state.papers[k].id);if(r)await add(`${cf}/00_Workshop_Papers/${k}_list.${/png/.test(r.mime)?'png':'jpg'}`,r.blob)}
+const ct=csv.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');await add(`${cf}/index.csv`,new Blob(['\ufeff'+ct]));
+const mc=[...state.corners,...state.items].reduce((n,g)=>n+g.photos.filter(p=>p.wm==='manual').length,0);const sm=`MOTORCLAIMCAM - CASE SUMMARY\nRegistration: ${state.case.plate}\nVehicle: ${state.case.vehicle}\nWorkshop: ${state.case.workshop}\nExported: ${new Date().toISOString()}\nManual watermark photos: ${mc}\n\nCHECKLIST\n${state.items.map(i=>`[${cnt(i)?'X':' '}] ${i.type.toUpperCase()} | ${numOf(i)} | ${i.name} | ${cnt(i)} photo(s)`).join('\n')}\n\nNote: organizational index only, not a damage assessment.\n`;await add(`${cf}/case_summary.txt`,new Blob([sm]));
+const e=new Uint8Array(22),w=new DataView(e.buffer),cs=cen.reduce((n,b)=>n+b.length,0);w.setUint32(0,0x06054b50,true);w.setUint16(8,cen.length,true);w.setUint16(10,cen.length,true);w.setUint32(12,cs,true);w.setUint32(16,off,true);
+downloadBlob(new Blob([...parts,...cen,e],{type:'application/zip'}),cf+'_photos.zip');alert('ZIP created ('+(seq-1)+' photos).'+(miss?' WARNING: '+miss+' photos not found in storage.':'')+' Open the file in Downloads to verify the contents before deleting the case.')}catch(e){console.error(e);alert('Export failed: '+e.message)}finally{busy=false;$('exportBtn').disabled=false}}
+async function init(){try{db=await openDB();const l=await req(db.transaction('kv').objectStore('kv').get('state'));if(l){state=Object.assign(blank(),l);state.case=l.case||{};state.corners=mig(l.corners||[])}else await kvPut('state',state);setInputs();renderAll();if(navigator.storage&&navigator.storage.persist){const p=await navigator.storage.persist();document.querySelector('.tiny').textContent+=p?' • Storage protected.':' • Storage not protected: install the app to the home screen.'}if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){alert('Browser storage is unavailable or blocked. Try the latest Chrome. '+e.message)}}
+const NP={part:'',labor:'L',misc:'M'},numOf=i=>[i.no?NP[i.type]+i.no:'',i.alsoNo?NP[i.also]+i.alsoNo:''].filter(Boolean).join(' / ');
+const fmtD=d=>{const p=n=>String(n).padStart(2,'0');return `${d.getDate()} ${['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()]} ${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`};
+let wmTimer;const wmShow=()=>{const on=$('wmSel').value==='m';$('wmManual').classList.toggle('hidden',!on);clearInterval(wmTimer);if(on){const u=()=>{$('wmNow').textContent=state.wmOffset?'Watermark now shows: '+fmtD(new Date(Date.now()+state.wmOffset)):'Pick a date and time, then press Set.'};u();wmTimer=setInterval(u,1000)}};
+$('wmSel').onchange=wmShow;
+$('wmSet').onclick=()=>{const v=$('wmDate').value,t=new Date(v).getTime();if(!v||isNaN(t)){alert('Pick a date and time first.');return}state.wmOffset=t-Date.now();save();wmShow()};
+const TL=i=>({part:'Parts',labor:'Labour',misc:'Other'}[i.type]||'Item')+(i.also?' + '+{part:'Parts',labor:'Labour'}[i.also]:'');
+let scan=[],TS;
+const loadTS=()=>TS||(TS=new Promise((res,rej)=>{if(window.Tesseract)return res();const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';s.onload=res;s.onerror=()=>{TS=null;rej(new Error('OCR engine could not be loaded. Internet is needed once.'))};document.head.appendChild(s)}));
+async function up(f){const b=await createImageBitmap(f),s=Math.min(+$('ocrSel').value/b.width,Math.sqrt(8e6/(b.width*b.height))),c=document.createElement('canvas');c.width=Math.round(b.width*s);c.height=Math.round(b.height*s);const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(b,0,0,c.width,c.height);b.close();return{blob:await new Promise(r=>c.toBlob(r,'image/png')),W:c.width}}
+function toRows(words){const ws=words.filter(w=>w.text.trim()).map(w=>({t:w.text.trim(),x0:w.bbox.x0,x1:w.bbox.x1,y:(w.bbox.y0+w.bbox.y1)/2,h:w.bbox.y1-w.bbox.y0})).sort((a,b)=>a.y-b.y);const hs=ws.map(w=>w.h).sort((a,b)=>a-b),mh=hs[hs.length>>1]||20,out=[];for(const w of ws){const r=out[out.length-1];if(r&&Math.abs(w.y-r.y)<mh*.6){r.w.push(w);r.y=(r.y*(r.w.length-1)+w.y)/r.w.length}else out.push({y:w.y,w:[w]})}out.forEach(r=>r.w.sort((a,b)=>a.x0-b.x0));return out}
+const SEC=t=>{const m=/estimates\s*on\s*(parts|misc\w*|labou?r)/.exec(t.toLowerCase());return m?(m[1]==='parts'?'part':m[1][0]==='m'?'misc':'labor'):null};
+const DEF={part:{px:.208,end:.68},misc:{px:.061},labor:{px:.05,end:.285,oth:.48}};
+function parse(rows,W,st){const out=[],pre={misc:'part',labor:'misc'},U=W*18/1080;const fh=rows.map(r=>SEC(r.w.map(w=>w.t).join(' '))).find(Boolean);let sec=fh?pre[fh]||null:st.sec,cur=null;
+for(const r of rows){const txt=r.w.map(w=>w.t).join(' '),h=SEC(txt);if(h){sec=h;cur=null;continue}if(/end of estimates/i.test(txt)){sec=null;continue}
+const pw=r.w.find(w=>/^particulars$/i.test(w.t));if(pw&&sec){const f=n=>{const q=r.w.find(w=>w.t.toLowerCase()===n);return q?q.x0/W:null};st.p[sec]={px:pw.x0/W,end:sec==='part'?f('src'):sec==='labor'?f('type'):null,oth:sec==='labor'?f('others'):null};cur=null;continue}
+if(!sec)continue;const P=Object.assign({},DEF[sec],st.p[sec]||{}),px=P.px*W,left=r.w.filter(w=>w.x1<px-6),no=left[0];
+if(no&&/^\d{1,3}$/.test(no.t)&&no.x0<px*.3){const qty=left[1]&&/^\d{1,3}$/.test(left[1].t)?+left[1].t:1;let nm=r.w.filter(w=>w.x0>=px-6&&(!P.end||w.x0<P.end*W-4)&&!(sec==='misc'&&w.x0>W*.8&&/^[\d,]+\.\d\d$/.test(w.t))).map(w=>w.t).join(' ').replace(/^\*+\s*/,'').replace(/\s+/g,' ').trim(),note='';const m=nm.match(/^(.*?)\s*(\[.*\])$/);if(m&&m[1]){nm=m[1];note=m[2]}
+const tag=sec==='labor'&&P.end&&P.oth?r.w.filter(w=>w.x0>=P.end*W-6&&w.x0<P.oth*W-6).map(w=>w.t).join(' '):'';cur=nm.length>1?{name:nm,type:sec,qty,note,tag,on:sec!=='misc',ly:r.y,no:+no.t}:null;if(cur)out.push(cur)}
+else if(cur&&sec!=='misc'&&!left.length&&Math.abs(r.w[0].x0-px)<=10&&r.y-cur.ly<U*.95){cur.note=(cur.note+' '+txt).trim();cur.ly=r.y}}
+st.sec=sec;return out}
+async function runScan(files){const sb=$('scanStatus'),t0=Date.now(),el=()=>Math.round((Date.now()-t0)/1000)+'s';let wk;try{sb.textContent='Loading OCR engine…';await loadTS();let k=0;wk=await Tesseract.createWorker('eng',1,{logger:m=>{if(m.status==='recognizing text')sb.textContent=`Reading image ${k}/${files.length}: ${Math.round(m.progress*100)}% (${el()})`}});const st={sec:null,p:{}},all=[];for(const f of files){k++;const {blob,W}=await up(f),{data}=await wk.recognize(blob);all.push(...parse(toRows(data.words||[]),W,st))}
+const seen=new Set();scan=all.filter(s=>{const key=s.type+'|'+s.name.toLowerCase().replace(/[^a-z0-9]+/g,'');if(seen.has(key))return false;seen.add(key);return true});sb.textContent=`Done. ${scan.length} lines read in ${el()}. Review carefully before adding.`;showScan()}catch(e){sb.textContent='Scan failed: '+e.message}finally{if(wk)wk.terminate()}}
+function showScan(){const c={part:0,labor:0,misc:0};scan.forEach(s=>c[s.type]++);$('scanOut').innerHTML=`<p class="hint">Parts: ${c.part} • Labour: ${c.labor} • Other: ${c.misc} (unticked). Compare the counts with the workshop estimate.</p>`+scan.map((s,i)=>`<div class="item"><input type="checkbox" data-c="${i}" ${s.on?'checked':''}><div class="itemmain"><input data-t="${i}" value="${esc(s.name)}"><div class="sub">${s.no?'No. '+s.no+' • ':''}${TL(s)}${s.qty>1?' • Qty '+s.qty:''}${s.tag?' • '+esc(s.tag):''}${s.note?' • '+esc(s.note):''}</div></div><button class="btn small outline" data-x="${i}">Remove</button></div>`).join('')+(scan.length?'<button class="btn" id="scanAdd">Add ticked items to checklist</button>':'');const o=$('scanOut');o.querySelectorAll('[data-c]').forEach(e=>e.onchange=()=>scan[e.dataset.c].on=e.checked);o.querySelectorAll('[data-t]').forEach(e=>e.oninput=()=>scan[e.dataset.t].name=e.value);o.querySelectorAll('[data-x]').forEach(e=>e.onclick=()=>{scan.splice(+e.dataset.x,1);showScan()});const a=$('scanAdd');if(a)a.onclick=insertScan}
+function insertScan(){const key=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'');let n=0,m=0;for(const s of scan){if(!s.on||!s.name.trim())continue;const ex=state.items.find(i=>key(i.name)===key(s.name));if(ex){if(ex.type!==s.type&&ex.also!==s.type){ex.also=s.type;ex.alsoNo=s.no;m++}if(s.tag&&!ex.tag)ex.tag=s.tag;if(ex.type===s.type&&!ex.no)ex.no=s.no}else{state.items.push({id:uid(),name:s.name.trim(),type:s.type,no:s.no,qty:s.qty,note:s.note,tag:s.tag,photos:[]});n++}}scan=scan.filter(s=>!s.on);later();renderAll();showScan();alert(`${n} items added, ${m} merged (same name in parts and labour).`)}
+$('scanBtn').onclick=()=>$('scanFile').click();$('scanFile').onchange=e=>{const f=[...e.target.files].sort((a,b)=>a.name.localeCompare(b.name));if(f.length)runScan(f)};
+document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('img[data-p]');if(!t)return;const r=await phGet(t.dataset.p);if(!r)return;const u=URL.createObjectURL(r.blob),v=document.createElement('div');v.style.cssText='position:fixed;inset:0;background:#000e;z-index:20;display:flex;align-items:center;justify-content:center;padding:8px';v.innerHTML='<div style="position:absolute;top:8px;left:8px;color:#fff;font:14px sans-serif;background:#0008;padding:4px 8px;border-radius:6px">Tap to close \u2022 '+(r.blob.size/1048576).toFixed(2)+' MB</div><img style="max-width:100%;max-height:100%" alt="">';v.querySelector('img').src=u;v.onclick=()=>{v.remove();URL.revokeObjectURL(u)};document.body.appendChild(v)});
+init();
+})();
+</script>
+</body>
+</html>
